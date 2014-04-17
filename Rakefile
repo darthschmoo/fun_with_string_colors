@@ -18,7 +18,7 @@ Jeweler::Tasks.new do |gem|
   gem.homepage = "http://github.com/darthschmoo/fun_with_string_colors"
   gem.license = "MIT"
   gem.summary = "Paint your strings for prettier console output."
-  gem.description = "Paint your strings for prettier console output."
+  gem.description = "Paint your strings for prettier console output.  Description should not equal summary."
   gem.email = "keeputahweird@gmail.com"
   gem.authors = ["Bryce Anderson"]
   # dependencies defined in Gemfile

@@ -2,11 +2,11 @@
 
 Paint your strings for prettier console output
 
-require 'fun_with_color_strings'
+    require 'fun_with_color_strings'
 
-FunWith::StringColors.activate
-String.colorize( true )
-puts "Hello World".paint(:pink)
+    FunWith::StringColors.activate
+    String.colorize( true )
+    puts "Hello World".paint(:pink)
 
 
 
