@@ -1,6 +1,14 @@
 = fun_with_string_colors
 
-Description goes here.
+Paint your strings for prettier console output
+
+require 'fun_with_color_strings'
+
+FunWith::StringColors.activate
+String.colorize( true )
+puts "Hello World".paint(:pink)
+
+
 
 == Contributing to fun_with_string_colors
  
