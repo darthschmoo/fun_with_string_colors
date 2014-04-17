@@ -4,9 +4,19 @@ Paint your strings for prettier console output
 
     require 'fun_with_color_strings'
 
-    FunWith::StringColors.activate
-    String.colorize( true )
-    puts "Hello World".paint(:pink)
+    FunWith::StringColors.activate     # imports functions into String
+    String.colorize( true )            # Yes, we want those functions to add color codes to strings.
+    String.colorize( STDOUT.tty? )     # only alter strings if we're in TTY (console)
+    
+    puts "Hello World".paint(:pink)    # Pretty shiny!
+    
+    String.paint?                      # Is painting active?
+    "".paint?                          # Same question.  One setting controls all strings.
+    
+    puts String::ANSI_COLORS.keys.inspect      # What symbols does paint recognize?
+
+
+
 
 
 
