@@ -36,12 +36,21 @@ module FunWith
         :reverse => "\e[27m",
         7        => "\e[27m",
         :bold    => "\e[22m",
-        1        => "\e[22m"
+        1        => "\e[22m",
+        :color   => "\e[0m"
       }
 
+      # Note:  use :reset and :unpaint in isolation (no other args).  It will nullify everything prior.
       def paint( *colors )
         if paint?
+          # debugger if colors.first == "95"
+          # puts "\e[27m\e[0m\e[22mcalling paint(*#{colors.inspect})"
+          
+          colors.flatten!
+          highlight_regex = colors.first.is_a?(Regexp) ? colors.shift : nil
+        
           rval = self.dup
+          prependers   = []
           terminations = []
           
           for color in colors
@@ -49,21 +58,28 @@ module FunWith
             when :reset, :unpaint
               regex = /\e\[\d+m/
               rval = rval.gsub( regex, '' )
+              prependers = []
               terminations = []
             when Symbol
               if ANSI_COLORS[color]
-                rval = "\e[#{ANSI_COLORS[color]}m#{rval}"
-                terminations << (ANSI_COLOR_TERMINATORS[color] || "\e[0m")
+                prependers << "\e[#{ANSI_COLORS[color]}m"
+                terminations << (ANSI_COLOR_TERMINATORS[color] || ANSI_COLOR_TERMINATORS[:color])
               end
             when /^\d+$/, Integer # you can give numbers/number strings directly
-              rval = "\e[#{ANSI_COLORS[color] || color}m#{rval}"
-              terminations << (ANSI_COLOR_TERMINATORS[color.to_i] || "\e[0m")
+              prependers << "\e[#{ANSI_COLORS[color] || color}m"
+              terminations << (ANSI_COLOR_TERMINATORS[color.to_i] || ANSI_COLOR_TERMINATORS[:color])
             end
           end
-
-          rval + terminations.uniq.join
+          
+          if highlight_regex.nil?
+            #puts "prependers #{prependers.inspect}"
+            #puts "terminations #{terminations.inspect}"
+            prependers.join + rval + terminations.join
+          else
+            rval.gsub( /(#{highlight_regex})/, prependers.join + "\\1" + terminations.join )
+          end
         else
-          self
+          self.dup   # Since it returns a duplicate of the original when in paint mode, this is more consistent behavior
         end
       end
 

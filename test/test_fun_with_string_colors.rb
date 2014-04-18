@@ -38,4 +38,16 @@ class TestFunWithStringColors < FunWith::StringColors::TestCase
   should "not alter output when .paint() receives nil/unrecognized" do
     assert_equal "hello", "hello".paint(nil)
   end
+  
+  should "highlight!" do
+    str = "Should highlight the number in brackets: 0 1 2 3 (4) 5"
+    puts str.paint( /4/, :bg_red, :bold )
+    
+    str = "Should highlight the numbers in brackets: 0 1 2 3 (4) 5 6 (7)"
+    puts str.paint( /4/, :bg_red, :bold ).paint( /7/, :bg_blue )
+    
+    str = "Should highlight all the numbers: 0 1 2 3 4 5 6 7"
+    puts str.paint( /\d+/, :bg_red, :bold ).paint( /7/, :bg_blue )
+    
+  end
 end

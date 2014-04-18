@@ -1,22 +1,22 @@
 = fun_with_string_colors
 
-Paint your strings for prettier console output
+Paint your strings for prettier console output.  Behold!  The Code of Exampleage!
 
-    require 'fun_with_color_strings'
+    require 'fun_with_string_colors'
 
     FunWith::StringColors.activate     # imports functions into String
     String.colorize( true )            # Yes, we want those functions to add color codes to strings.
     String.colorize( STDOUT.tty? )     # only alter strings if we're in TTY (console)
     
     puts "Hello World".paint(:pink)    # Pretty shiny!
-    
+    puts "Hello World".paint(:bg_red, :blue, :bold, :underline, :blink)   # An affront to God and Man, I tells ya.
+
+    # If your first arg to .paint() is a regular expression, only the matches will be colored in.  Useful!
+    puts "Hello World".paint(/hello/i, :bg_red).paint(/world/i, :bg_blue, :reverse, :underline)
     String.paint?                      # Is painting active?
     "".paint?                          # Same question.  One setting controls all strings.
     
     puts String::ANSI_COLORS.keys.inspect      # What symbols does paint recognize?
-
-
-
 
 
 
