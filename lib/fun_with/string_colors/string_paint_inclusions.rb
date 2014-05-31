@@ -50,33 +50,15 @@ module FunWith
           highlight_regex = colors.first.is_a?(Regexp) ? colors.shift : nil
         
           rval = self.dup
-          prependers   = []
-          terminations = []
-          
-          for color in colors
-            case color
-            when :reset, :unpaint
-              regex = /\e\[\d+m/
-              rval = rval.gsub( regex, '' )
-              prependers = []
-              terminations = []
-            when Symbol
-              if ANSI_COLORS[color]
-                prependers << "\e[#{ANSI_COLORS[color]}m"
-                terminations << (ANSI_COLOR_TERMINATORS[color] || ANSI_COLOR_TERMINATORS[:color])
-              end
-            when /^\d+$/, Integer # you can give numbers/number strings directly
-              prependers << "\e[#{ANSI_COLORS[color] || color}m"
-              terminations << (ANSI_COLOR_TERMINATORS[color.to_i] || ANSI_COLOR_TERMINATORS[:color])
-            end
-          end
+          prependers, terminations, reset = self.fwsc_map_color_args_to_prepend_and_terminate( colors )
+          rval = rval.gsub( /\e\[\d+m/, '' ) if reset
           
           if highlight_regex.nil?
             #puts "prependers #{prependers.inspect}"
             #puts "terminations #{terminations.inspect}"
-            prependers.join + rval + terminations.join
+            prependers.uniq.join + rval + terminations.uniq.join
           else
-            rval.gsub( /(#{highlight_regex})/, prependers.join + "\\1" + terminations.join )
+            rval.gsub( /(#{highlight_regex})/, prependers.uniq.join + "\\1" + terminations.uniq.join )
           end
         else
           self.dup   # Since it returns a duplicate of the original when in paint mode, this is more consistent behavior
@@ -85,6 +67,32 @@ module FunWith
 
       def paint?
         self.class.colorize?
+      end
+      
+      protected
+      def fwsc_map_color_args_to_prepend_and_terminate( colors )
+        prependers = []
+        terminations = []
+        reset = false
+        
+        for color in colors
+          case color
+          when :reset, :unpaint
+            prependers = []
+            terminations = []
+            reset = true
+          when Symbol
+            if ANSI_COLORS[color]
+              prependers << "\e[#{ANSI_COLORS[color]}m"
+              terminations << (ANSI_COLOR_TERMINATORS[color] || ANSI_COLOR_TERMINATORS[:color])
+            end
+          when /^\d+$/, Integer # you can give numbers/number strings directly
+            prependers << "\e[#{ANSI_COLORS[color] || color}m"
+            terminations << (ANSI_COLOR_TERMINATORS[color.to_i] || ANSI_COLOR_TERMINATORS[:color])
+          end
+        end
+        
+        [prependers, terminations, reset]
       end
     end
   end
